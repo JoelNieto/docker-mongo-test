@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TodoApp.Models;
+using MongoDB.Driver;
 
 namespace TodoApp
 {
@@ -25,6 +27,14 @@ namespace TodoApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var config = new ServerConfig();
+            Configuration.Bind(config);           
+
+            var todoContext = new TodoContext(config.MongoDB);
+            var repo = new TodoRepository(todoContext);
+
+            services.AddSingleton<ITodoRepository>(repo);
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
